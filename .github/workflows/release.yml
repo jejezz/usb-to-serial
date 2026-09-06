@@ -1,0 +1,58 @@
+name: Release macOS DMG
+
+# v로 시작하는 태그를 푸시하면 (예: v0.1.0) 릴리스 빌드를 만들어서 DMG로
+# 패키징하고 GitHub Release에 첨부한다.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.1"
+          channel: stable
+
+      # flutter_libserialport가 CocoaPods로 libserialport C 라이브러리를
+      # 소스 빌드하는 데 필요 (README 참고).
+      - name: Install native build tools
+        run: brew install autoconf automake pkg-config create-dmg
+
+      - run: flutter pub get
+
+      - run: flutter build macos --release
+
+      - name: Package DMG
+        run: |
+          APP_PATH="build/macos/Build/Products/Release/usb_to_com.app"
+          DMG_PATH="Portside-${{ github.ref_name }}.dmg"
+
+          # create-dmg는 완성된 DMG를 만들고도 코드사이닝 관련 경고 때문에
+          # 종종 0이 아닌 종료 코드를 내는 걸로 알려져 있어서, 실패로 치지
+          # 않고 실제로 파일이 생겼는지로 판단한다.
+          create-dmg \
+            --volname "Portside" \
+            --window-size 500 300 \
+            --icon-size 100 \
+            --app-drop-link 380 120 \
+            "$DMG_PATH" \
+            "$APP_PATH" || true
+
+          test -f "$DMG_PATH"
+          echo "DMG_PATH=$DMG_PATH" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" "$DMG_PATH" \
+            --title "Portside ${{ github.ref_name }}" \
+            --generate-notes

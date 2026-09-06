@@ -30,6 +30,17 @@ flutter pub get
 flutter run -d macos
 ```
 
+## 릴리스 만들기
+
+`v` 로 시작하는 태그를 푸시하면 GitHub Actions(`.github/workflows/release.yml`)가 릴리스 빌드를 만들어 DMG로 패키징하고 GitHub Release에 올려준다.
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+서명/공증(Apple Developer Program, $99/년)을 안 했기 때문에, 받는 사람 Mac에서는 Gatekeeper가 "확인되지 않은 개발자" 경고를 띄운다 — 우클릭 후 "열기"로 한 번 우회하면 된다.
+
 ## 알려진 한계
 
 - 터미널 화면에 직접 타이핑할 때 한글 조합이 깨진다 — `xterm2`(정확히는 원조 `xterm.dart`)의 macOS 텍스트 입력 처리 버그. Line Sender 입력창은 일반 `TextField`라 영향 없음.
