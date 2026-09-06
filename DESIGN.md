@@ -143,3 +143,9 @@ Phase 0~8 전부 실기기(USB-시리얼 어댑터, Android 디버그 콘솔 115
 - `port_selector.dart`/`baud_rate_selector.dart`/`line_sender.dart`/`settings_dialog.dart` — TextField/Dropdown을 Saturn의 "inset fill"(불투명도 28% 검정 채움, 테두리 없음, tile radius) 스타일로, 아이콘 버튼을 `IconBadge`로, 체크박스를 `Switch`로 교체.
 - 아이콘을 `_rounded`(Saturn과 동일 스타일)로 전면 교체 — Phase 9 폴리시 때 의도적으로 `_sharp`(Saturn과 차별화)로 갔던 걸 이번 요청으로 뒤집음. 두 결정 다 그 시점 요구사항엔 맞았던 판단.
 - 폰트는 Saturn의 `SeoulNamsan` 대신 이미 있는 `ClipartKorea`를 유지(실제 폰트 파일이 없어서) — 목업에서는 Noto Sans KR로 임시 대체했었음.
+
+## Phase 11 — 연결 직후 프롬프트 깨우기 (2026-09-06)
+많은 임베디드 리눅스/안드로이드 디버그 콘솔은 뭔가 받기 전엔 프롬프트를 안 찍는다(Phase 1에서 PING을 보내야만 응답이 왔던 것과 같은 현상). `TerminalSessionProvider.connect()`가 연결 성공 직후 `sendRaw([0x0D, 0x0A])`(CRLF)를 한 번 보내서 콘솔을 깨우도록 함 — 기존 raw 전송 경로(`sendRaw`)를 그대로 재사용.
+
+## Phase 12 — About / Help (2026-09-06)
+`lib/widgets/about_dialog.dart`(앱 이름/버전/설명), `lib/widgets/help_dialog.dart`(기능별 사용법 + 단축키 목록) 신설. 네이티브 macOS 메뉴(앱 메뉴의 "About Portside" 등)에 연결하려면 플랫폼 채널 브릿지가 필요해서, 지금까지 전부 Flutter 쪽 UI로만 만들어온 흐름에 맞춰 툴바에 `PopupMenuButton`(물음표 아이콘)으로 "도움말"/"Portside 정보"를 노출하는 쪽을 택함.

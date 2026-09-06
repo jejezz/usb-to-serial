@@ -115,6 +115,10 @@ class TerminalSessionProvider extends ChangeNotifier {
       _errorMessage = null;
       _portName = settings.portName;
       _baudRate = settings.baudRate;
+      // 많은 시리얼 콘솔(임베디드 리눅스/안드로이드 디버그 콘솔 등)은 뭔가
+      // 받기 전엔 프롬프트를 안 찍어준다 — 연결하자마자 Enter를 한 번 보내서
+      // 깨워준다.
+      sendRaw(const [0x0D, 0x0A]);
     } on SerialServiceException catch (e) {
       _status = ConnectionStatus.error;
       _errorMessage = e.message;

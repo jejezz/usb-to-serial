@@ -5,8 +5,10 @@ import '../models/connection_settings.dart';
 import '../state/sessions_provider.dart';
 import '../state/terminal_session_provider.dart';
 import '../theme/tokens.dart';
+import '../widgets/about_dialog.dart';
 import '../widgets/baud_rate_selector.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/help_dialog.dart';
 import '../widgets/hex_view.dart';
 import '../widgets/line_sender.dart';
 import '../widgets/port_selector.dart';
@@ -14,6 +16,8 @@ import '../widgets/settings_dialog.dart';
 import '../widgets/status_bar.dart';
 import '../widgets/tab_bar_row.dart';
 import '../widgets/terminal_view.dart';
+
+enum _MenuAction { help, about }
 
 /// 탭바 + 활성 탭의 세션 화면. 탭별 상태([TerminalSessionProvider])는
 /// [SessionsProvider]가 들고 있고, 여기서는 활성 세션 하나를 골라
@@ -76,7 +80,7 @@ class _SessionBody extends StatelessWidget {
                 IconBadge(icon: Icons.cable_rounded, color: AppColors.accent, size: 32),
                 const SizedBox(width: 8),
                 SizedBox(
-                  width: 210,
+                  width: 190,
                   child: PortSelector(
                     selectedPort: session.pendingPort,
                     enabled: !connected,
@@ -113,6 +117,23 @@ class _SessionBody extends StatelessWidget {
                   onSelectionChanged: (selection) => session.setViewMode(selection.first),
                 ),
                 const Spacer(),
+                PopupMenuButton<_MenuAction>(
+                  tooltip: '도움말',
+                  icon: const IconBadge(icon: Icons.help_outline_rounded, color: AppColors.idle, size: 32),
+                  onSelected: (action) {
+                    switch (action) {
+                      case _MenuAction.help:
+                        showDialog<void>(context: context, builder: (_) => const HelpDialog());
+                      case _MenuAction.about:
+                        showDialog<void>(context: context, builder: (_) => const PortsideAboutDialog());
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(value: _MenuAction.help, child: Text('도움말')),
+                    PopupMenuItem(value: _MenuAction.about, child: Text('Portside 정보')),
+                  ],
+                ),
+                const SizedBox(width: 8),
                 IconBadge(
                   icon: Icons.settings_rounded,
                   color: AppColors.idle,
