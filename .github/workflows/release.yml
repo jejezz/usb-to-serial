@@ -32,7 +32,7 @@ jobs:
 
       - name: Package DMG
         run: |
-          APP_PATH="build/macos/Build/Products/Release/usb_to_com.app"
+          APP_PATH="build/macos/Build/Products/Release/Portside.app"
           DMG_PATH="Portside-${{ github.ref_name }}.dmg"
 
           # create-dmg는 완성된 DMG를 만들고도 코드사이닝 관련 경고 때문에
