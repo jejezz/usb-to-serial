@@ -16,7 +16,7 @@ TextTheme _lightTextTheme(TextTheme base) {
   TextStyle? light(TextStyle? style) {
     if (style == null) return null;
     return style.copyWith(
-      fontFamily: 'ClipartKorea',
+      fontFamily: 'SeoulNamsan',
       fontWeight: FontWeight.w300,
       fontSize: (style.fontSize ?? 14) - 1,
     );

@@ -149,3 +149,6 @@ Phase 0~8 전부 실기기(USB-시리얼 어댑터, Android 디버그 콘솔 115
 
 ## Phase 12 — About / Help (2026-09-06)
 `lib/widgets/about_dialog.dart`(앱 이름/버전/설명), `lib/widgets/help_dialog.dart`(기능별 사용법 + 단축키 목록) 신설. 네이티브 macOS 메뉴(앱 메뉴의 "About Portside" 등)에 연결하려면 플랫폼 채널 브릿지가 필요해서, 지금까지 전부 Flutter 쪽 UI로만 만들어온 흐름에 맞춰 툴바에 `PopupMenuButton`(물음표 아이콘)으로 "도움말"/"Portside 정보"를 노출하는 쪽을 택함.
+
+## Phase 13 — 메뉴 폰트를 SeoulNamsan으로 교체 (2026-09-06)
+Phase 10에서 실제 폰트 파일이 없어 `ClipartKorea`를 그대로 뒀던 걸 뒤집음 — 사용자가 다른 프로젝트(Allwinner flashing tool)에 적용된 Saturn의 `SeoulNamsan`을 보고 그쪽이 더 낫다고 판단. `saturn-mobile-client-flutter/assets/fonts/`의 4중량(light 300/regular 400/bold 700/extra_bold 800) TTF를 그대로 복사해오고, `pubspec.yaml` 폰트 블록과 `app.dart`의 `_lightTextTheme()` 폰트 패밀리만 교체 — 터미널 안쪽 모노스페이스 폰트(`SettingsProvider`가 따로 관리)는 무관. 기존 `ClipartKorea` TTF 4종은 삭제.

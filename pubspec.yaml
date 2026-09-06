@@ -25,13 +25,13 @@ flutter:
   uses-material-design: true
 
   fonts:
-    - family: ClipartKorea
+    - family: SeoulNamsan
       fonts:
-        - asset: assets/fonts/clipartkorea_light.ttf
+        - asset: assets/fonts/seoul_namsan_light.ttf
           weight: 300
-        - asset: assets/fonts/clipartkorea_regular.ttf
+        - asset: assets/fonts/seoul_namsan_regular.ttf
           weight: 400
-        - asset: assets/fonts/clipartkorea_medium.ttf
-          weight: 500
-        - asset: assets/fonts/clipartkorea_bold.ttf
+        - asset: assets/fonts/seoul_namsan_bold.ttf
           weight: 700
+        - asset: assets/fonts/seoul_namsan_extra_bold.ttf
+          weight: 800
