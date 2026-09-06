@@ -1,7 +1,7 @@
 name: usb_to_com
 description: "macOS 전용 시리얼(USB-to-COM) 터미널"
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.1+1
 
 environment:
   sdk: ^3.13.1
