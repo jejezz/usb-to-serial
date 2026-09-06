@@ -142,6 +142,8 @@ class _UsbToComAppState extends State<UsbToComApp> with WidgetsBindingObserver {
                 final sessions = context.read<SessionsProvider>();
                 sessions.closeSession(sessions.activeIndex);
               },
+              const SingleActivator(LogicalKeyboardKey.keyK, meta: true): () =>
+                  context.read<SessionsProvider>().active.clearTerminal(),
             },
             child: MaterialApp(
               title: 'Portside',

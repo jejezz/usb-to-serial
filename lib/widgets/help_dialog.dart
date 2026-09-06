@@ -20,6 +20,7 @@ class HelpDialog extends StatelessWidget {
     ('⌘T', '새 탭'),
     ('⌘W', '현재 탭 닫기'),
     ('⌘⇧R', '로깅 시작/정지'),
+    ('⌘K', '화면 지우기'),
   ];
 
   @override

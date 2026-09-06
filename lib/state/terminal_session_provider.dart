@@ -96,6 +96,12 @@ class TerminalSessionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 화면(뷰포트+스크롤백)만 지운다 — 로그 파일이나 Hex View용 raw 버퍼는
+  /// 그대로 유지된다.
+  void clearTerminal() {
+    terminal.clear();
+  }
+
   /// xterm2의 `Terminal.maxLines`는 생성 시에만 정해지는 값이라, 스크롤백
   /// 줄 수를 바꾸려면 터미널을 통째로 새로 만들어야 한다 — 그 과정에서
   /// 지금까지 쌓인 화면 내용(스크롤백)은 비워진다.

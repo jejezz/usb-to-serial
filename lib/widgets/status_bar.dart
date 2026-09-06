@@ -43,6 +43,13 @@ class StatusBar extends StatelessWidget {
           tooltip: '전체 복사',
           onTap: () => Clipboard.setData(ClipboardData(text: session.displayText)),
         ),
+        const SizedBox(width: 6),
+        IconBadge(
+          icon: Icons.clear_all_rounded,
+          color: AppColors.idle,
+          tooltip: '화면 지우기 (⌘K)',
+          onTap: () => session.clearTerminal(),
+        ),
       ],
     );
   }
