@@ -37,3 +37,7 @@ flutter run -d macos
 ## 설계 문서
 
 전체 설계 배경, 아키텍처, 각 기능을 만들며 겪은 문제와 해결 과정은 [DESIGN.md](DESIGN.md)에 있다.
+
+## 라이선스
+
+[MIT](LICENSE). 실제 시리얼 포트 접근은 `flutter_libserialport`가 동적으로 링크하는 [libserialport](https://sigrok.org/wiki/Libserialport)(LGPL v3)에 의존한다.
