@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../services/serial_service.dart';
+import '../theme/tokens.dart';
+import 'glass_card.dart';
 
 /// 시리얼 포트 드롭다운 + 새로고침.
 /// 연결돼 있지 않을 때는 2초마다 자동으로 포트 목록을 다시 조회해서
@@ -54,7 +56,6 @@ class _PortSelectorState extends State<PortSelector> {
   @override
   Widget build(BuildContext context) {
     final selected = _ports.contains(widget.selectedPort) ? widget.selectedPort : null;
-    final accent = Theme.of(context).colorScheme.primary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -67,7 +68,13 @@ class _PortSelectorState extends State<PortSelector> {
               isDense: true,
               hintText: '포트',
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              prefixIcon: Icon(Icons.usb_sharp, size: 18, color: accent),
+              filled: true,
+              fillColor: Colors.black.withValues(alpha: 0.28),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.tile),
+                borderSide: BorderSide.none,
+              ),
+              prefixIcon: const Icon(Icons.usb_rounded, size: 18, color: AppColors.accent),
               prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 16),
             ),
             items: [
@@ -86,11 +93,12 @@ class _PortSelectorState extends State<PortSelector> {
             onChanged: widget.enabled ? widget.onChanged : null,
           ),
         ),
-        IconButton(
-          visualDensity: VisualDensity.compact,
+        IconBadge(
+          icon: Icons.refresh_rounded,
+          color: AppColors.idle,
+          size: 34,
           tooltip: '포트 새로고침',
-          onPressed: widget.enabled ? _refresh : null,
-          icon: Icon(Icons.refresh_sharp, size: 20, color: accent),
+          onTap: widget.enabled ? _refresh : null,
         ),
       ],
     );

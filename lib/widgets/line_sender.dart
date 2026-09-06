@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../models/line_ending.dart';
 import '../state/terminal_session_provider.dart';
+import '../theme/tokens.dart';
+import 'glass_card.dart';
 
 /// 여러 줄을 미리 써두고 한 줄씩 순서대로 전송하는 스크립트 러너.
 /// 그냥 Enter는 커서가 있는 줄을 전송하고, Ctrl+Enter는 평범한 줄바꿈이다.
@@ -111,12 +113,17 @@ class _LineSenderState extends State<LineSender> {
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
-                decoration: const InputDecoration(
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: AppColors.textHi),
+                decoration: InputDecoration(
                   isDense: true,
                   hintText: 'Enter: 커서 줄 전송 · Ctrl+Enter: 줄바꿈',
-                  contentPadding: EdgeInsets.all(8),
-                  border: OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.all(10),
+                  filled: true,
+                  fillColor: Colors.black.withValues(alpha: 0.28),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.tile),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
@@ -124,7 +131,7 @@ class _LineSenderState extends State<LineSender> {
         ),
         const SizedBox(width: 8),
         SizedBox(
-          width: 108,
+          width: 132,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -144,20 +151,26 @@ class _LineSenderState extends State<LineSender> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Checkbox(
-                      value: session.localEcho,
-                      visualDensity: VisualDensity.compact,
-                      onChanged: (value) => session.setLocalEcho(value ?? true),
+                    const Text('Echo', style: TextStyle(fontSize: 12, color: AppColors.textMid)),
+                    const SizedBox(width: 4),
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: session.localEcho,
+                        activeTrackColor: AppColors.accent,
+                        onChanged: (value) => session.setLocalEcho(value),
+                      ),
                     ),
-                    const Text('Echo', style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
-              IconButton(
-                visualDensity: VisualDensity.compact,
+              IconBadge(
+                icon: Icons.send_rounded,
+                color: AppColors.primary,
+                active: connected,
+                size: 34,
                 tooltip: '현재 줄 전송',
-                onPressed: connected ? _sendCurrentLine : null,
-                icon: Icon(Icons.send_sharp, size: 20, color: Theme.of(context).colorScheme.primary),
+                onTap: connected ? _sendCurrentLine : null,
               ),
             ],
           ),

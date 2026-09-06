@@ -3,10 +3,13 @@ import 'package:provider/provider.dart';
 
 import '../state/sessions_provider.dart';
 import '../state/terminal_session_provider.dart';
+import '../theme/tokens.dart';
+import 'glass_card.dart';
 
 /// 세션(탭) 목록을 보여주는 얇은 가로 바. 탭이 동적으로 추가/삭제돼서
 /// Material `TabBar`/`TabController`(길이 변경 시 재생성이 번거로움) 대신
-/// 직접 만들었다.
+/// 직접 만들었다. Saturn처럼 하단 고정 탭 대신, 세션을 전환한다는 성격에
+/// 맞게 상단에 필(pill) 모양 GlassCard로 배치했다.
 class TabBarRow extends StatelessWidget {
   const TabBarRow({super.key});
 
@@ -14,17 +17,18 @@ class TabBarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final sessionsProvider = context.watch<SessionsProvider>();
     final sessions = sessionsProvider.sessions;
-    final colors = Theme.of(context).colorScheme;
 
-    return Container(
-      height: 34,
-      color: colors.surfaceContainer,
+    return SizedBox(
+      height: 52,
       child: Row(
         children: [
+          const SizedBox(width: 12),
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: sessions.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 return _TabChip(
                   session: sessions[index],
@@ -36,12 +40,14 @@ class TabBarRow extends StatelessWidget {
               },
             ),
           ),
-          IconButton(
+          const SizedBox(width: 8),
+          IconBadge(
+            icon: Icons.add_rounded,
+            color: AppColors.primary,
             tooltip: '새 탭 (⌘T)',
-            visualDensity: VisualDensity.compact,
-            onPressed: sessionsProvider.addSession,
-            icon: Icon(Icons.add_sharp, size: 20, color: colors.primary),
+            onTap: sessionsProvider.addSession,
           ),
+          const SizedBox(width: 12),
         ],
       ),
     );
@@ -65,49 +71,59 @@ class _TabChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     // 이 탭 하나의 제목/연결 상태가 바뀔 때만 다시 그리면 되니, 탭바
     // 전체가 아니라 여기서 해당 session만 직접 listen한다.
     return ListenableBuilder(
       listenable: session,
       builder: (context, _) {
-        final Color dotColor = switch (session.status) {
-          ConnectionStatus.connected => Colors.greenAccent,
-          ConnectionStatus.error => Colors.redAccent,
-          ConnectionStatus.disconnected => colors.outline,
+        final Color statusColor = switch (session.status) {
+          ConnectionStatus.connected => AppColors.success,
+          ConnectionStatus.error => AppColors.danger,
+          ConnectionStatus.disconnected => AppColors.idle,
         };
 
-        return InkWell(
+        return GestureDetector(
           onTap: onTap,
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 110, maxWidth: 190),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: isActive ? colors.surfaceContainerHigh : Colors.transparent,
-              border: Border(
-                bottom: BorderSide(color: isActive ? colors.primary : Colors.transparent, width: 2),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.circle, size: 8, color: dotColor),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(session.tabTitle, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
-                ),
-                if (canClose) ...[
-                  const SizedBox(width: 4),
-                  InkWell(
-                    onTap: onClose,
-                    borderRadius: BorderRadius.circular(10),
-                    child: const Padding(
-                      padding: EdgeInsets.all(2),
-                      child: Icon(Icons.close_sharp, size: 14),
+          child: GlassCard(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            radius: AppRadius.chip,
+            accent: statusColor,
+            active: isActive,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 90, maxWidth: 190),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      session.tabTitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                        color: isActive ? AppColors.textHi : AppColors.textMid,
+                      ),
                     ),
                   ),
+                  if (canClose) ...[
+                    const SizedBox(width: 6),
+                    InkWell(
+                      onTap: onClose,
+                      borderRadius: BorderRadius.circular(10),
+                      child: const Padding(
+                        padding: EdgeInsets.all(2),
+                        child: Icon(Icons.close_rounded, size: 14, color: AppColors.textLow),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

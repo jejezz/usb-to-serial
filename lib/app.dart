@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'state/sessions_provider.dart';
 import 'state/settings_provider.dart';
+import 'theme/tokens.dart';
 
 /// 메뉴/버튼/라벨용 Light 굵기 + 살짝 작은 크기 텍스트 테마. Material 기본
 /// 텍스트 테마는 두께가 Regular라 커스텀 폰트를 얹어도 밋밋해 보여서,
@@ -40,16 +41,32 @@ TextTheme _lightTextTheme(TextTheme base) {
   );
 }
 
+// saturn-mobile-client-flutter(lib/core/theme.dart)의 다크 ColorScheme을
+// 그대로 옮겼다 — 같은 패밀리 앱처럼 보이도록.
 ThemeData _buildTheme() {
   final base = ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7C4DFF), brightness: Brightness.dark),
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.primary,
+      onPrimary: Colors.white,
+      secondary: AppColors.accent,
+      onSecondary: Colors.white,
+      surface: AppColors.surface,
+      onSurface: AppColors.textHi,
+      error: AppColors.danger,
+      onError: Colors.white,
+    ),
+    scaffoldBackgroundColor: Colors.transparent,
   );
   return base.copyWith(
     textTheme: _lightTextTheme(base.textTheme),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: AppColors.primary,
+        minimumSize: const Size(0, 40),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
       ),
     ),
   );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/tokens.dart';
+import 'glass_card.dart';
+
 const kCommonBaudRates = <int>[1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400];
 
 /// 보드레이트 입력 필드 + 흔한 값 프리셋 메뉴.
@@ -60,15 +63,22 @@ class _BaudRateSelectorState extends State<BaudRateSelector> {
               isDense: true,
               hintText: 'Baud',
               errorText: _errorText,
-              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              filled: true,
+              fillColor: Colors.black.withValues(alpha: 0.28),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.tile),
+                borderSide: BorderSide.none,
+              ),
             ),
             onChanged: _onTextChanged,
           ),
         ),
+        const SizedBox(width: 4),
         PopupMenuButton<int>(
           enabled: widget.enabled,
           tooltip: '흔한 보드레이트',
-          icon: Icon(Icons.speed_sharp, size: 20, color: Theme.of(context).colorScheme.primary),
+          icon: const IconBadge(icon: Icons.speed_rounded, color: AppColors.accent, size: 34),
           onSelected: _pickPreset,
           itemBuilder: (context) => [
             for (final b in kCommonBaudRates) PopupMenuItem(value: b, child: Text('$b')),

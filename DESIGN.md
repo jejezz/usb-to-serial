@@ -131,3 +131,15 @@ App Sandbox를 끈 현재 설정으로 실기기 열기/읽기/쓰기 전부 정
 
 ## 현재 상태 (v1 완료)
 Phase 0~8 전부 실기기(USB-시리얼 어댑터, Android 디버그 콘솔 115200bps)로 검증 완료. 알려진 한계는 터미널 화면 raw 타이핑 중 한글 조합 실패(`xterm2` 업스트림 버그, 위 참고) 하나뿐이고 사용 빈도가 낮아 감수하기로 함. 이후 추가 아이디어가 생기면 이 문서에 새 Phase로 이어서 기록.
+
+## Phase 10 — Saturn 디자인 언어 적용 (2026-09-06)
+사용자가 형제 프로젝트 `saturn-mobile-client-flutter`와 같은 패밀리처럼 보이면 좋겠다고 해서, 먼저 Claude Design 캔버스로 "Portside가 Saturn의 일부라면" 컨셉 목업을 그려 확인받은 뒤 실제 앱에 반영함.
+
+- `lib/theme/tokens.dart`(신규) — Saturn의 `lib/core/theme.dart`에서 `AppColors`(bg `#0A0E14`, surface `#151D27`, primary `#4C9DFF`, accent `#7C5CFF`, success/warning/danger/idle 등)와 `AppRadius`(card 24 / tile 20 / chip 999)를 그대로 옮김 + `AuroraBackground`(대각선 그라디언트 배경 워시).
+- `lib/widgets/glass_card.dart`(신규) — Saturn의 `glass_card.dart`를 그대로 이식: `GlassCard`(반투명 패널 + 헤어라인 보더, active일 때 accent 26%/8% 알파블렌드 그라디언트 + glow shadow), `IconBadge`(둥근 사각형 아이콘 배지, 비활성 14%/활성 90% 알파), `StatusPill`(필 모양 상태 배지).
+- `app.dart` — `ColorScheme`을 Saturn과 동일한 다크 스킴으로 교체, `FilledButton` 스타일을 Saturn 톤(radius 16, bold)에 맞춤. 기존 `_lightTextTheme`(폰트 Light+축소)은 유지 — Saturn 특유의 굵은 강조는 새 컴포넌트(StatusPill, 활성 탭, 버튼)의 로컬 스타일로만 구현해서 두 요구사항이 충돌하지 않게 함.
+- `home_screen.dart` — 전체를 `AuroraBackground`로 감싸고, 툴바/터미널 영역/상태바/Line Sender를 각각 `GlassCard`로 감쌈. 터미널은 GlassCard(surface색 프레임) 안에 xterm2 자체 배경(테마별 어두운색)이 있는 "베젤 속 화면" 구도. 연결되면 우상단에 `StatusPill`("CONNECTED")을 겹쳐 띄움.
+- `tab_bar_row.dart` — Saturn은 하단 고정 4탭이지만 Portside 탭은 세션 전환이라 성격이 달라 상단에 유지하되, 각 탭을 `GlassCard` 기반 필 모양으로 바꾸고 활성 탭에 연결 상태색(연결=초록/에러=빨강/기본=회색) 글로우를 입힘 — Saturn의 디바이스별 accent 색 관례를 세션 상태에 맞게 응용.
+- `port_selector.dart`/`baud_rate_selector.dart`/`line_sender.dart`/`settings_dialog.dart` — TextField/Dropdown을 Saturn의 "inset fill"(불투명도 28% 검정 채움, 테두리 없음, tile radius) 스타일로, 아이콘 버튼을 `IconBadge`로, 체크박스를 `Switch`로 교체.
+- 아이콘을 `_rounded`(Saturn과 동일 스타일)로 전면 교체 — Phase 9 폴리시 때 의도적으로 `_sharp`(Saturn과 차별화)로 갔던 걸 이번 요청으로 뒤집음. 두 결정 다 그 시점 요구사항엔 맞았던 판단.
+- 폰트는 Saturn의 `SeoulNamsan` 대신 이미 있는 `ClipartKorea`를 유지(실제 폰트 파일이 없어서) — 목업에서는 Noto Sans KR로 임시 대체했었음.

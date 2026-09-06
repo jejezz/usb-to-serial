@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../models/connection_settings.dart';
 import '../state/sessions_provider.dart';
 import '../state/terminal_session_provider.dart';
+import '../theme/tokens.dart';
 import '../widgets/baud_rate_selector.dart';
+import '../widgets/glass_card.dart';
 import '../widgets/hex_view.dart';
 import '../widgets/line_sender.dart';
 import '../widgets/port_selector.dart';
@@ -24,18 +26,21 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final sessionsProvider = context.watch<SessionsProvider>();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const TabBarRow(),
-            Expanded(
-              child: ChangeNotifierProvider<TerminalSessionProvider>.value(
-                value: sessionsProvider.active,
-                child: const _SessionBody(),
+    return AuroraBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              const TabBarRow(),
+              Expanded(
+                child: ChangeNotifierProvider<TerminalSessionProvider>.value(
+                  value: sessionsProvider.active,
+                  child: const _SessionBody(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -57,108 +62,119 @@ class _SessionBody extends StatelessWidget {
     final session = context.watch<TerminalSessionProvider>();
     final connected = session.status == ConnectionStatus.connected;
     final canConnect = !connected && session.pendingPort != null && session.pendingBaudRate != null;
-    final colors = Theme.of(context).colorScheme;
 
-    return Column(
-      children: [
-        // 상단 툴바: 연결 컨트롤 + 뷰 전환 + 설정을 전부 한 줄에 압축.
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerHigh,
-            border: Border(bottom: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.cable_sharp, size: 22, color: colors.primary),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 230,
-                child: PortSelector(
-                  selectedPort: session.pendingPort,
-                  enabled: !connected,
-                  onChanged: session.setPendingPort,
-                ),
-              ),
-              const SizedBox(width: 4),
-              BaudRateSelector(
-                initialBaudRate: session.pendingBaudRate ?? 115200,
-                enabled: !connected,
-                onChanged: session.setPendingBaudRate,
-              ),
-              const SizedBox(width: 4),
-              FilledButton(
-                style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
-                onPressed: connected ? session.disconnect : (canConnect ? () => _connect(session) : null),
-                child: Text(connected ? 'Disconnect' : 'Connect'),
-              ),
-              const SizedBox(width: 12),
-              SegmentedButton<ViewMode>(
-                style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                segments: [
-                  const ButtonSegment(
-                    value: ViewMode.terminal,
-                    tooltip: 'Terminal',
-                    icon: Icon(Icons.terminal_sharp, size: 18),
-                  ),
-                  const ButtonSegment(
-                    value: ViewMode.hex,
-                    tooltip: 'Hex',
-                    icon: Icon(Icons.data_array_sharp, size: 18),
-                  ),
-                ],
-                selected: {session.viewMode},
-                onSelectionChanged: (selection) => session.setViewMode(selection.first),
-              ),
-              const Spacer(),
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                tooltip: '폰트 / 테마',
-                onPressed: () => showDialog<void>(context: context, builder: (_) => const SettingsDialog()),
-                icon: Icon(Icons.settings_sharp, size: 22, color: colors.primary),
-              ),
-            ],
-          ),
-        ),
-        if (session.status == ConnectionStatus.error)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            color: colors.errorContainer,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          // 상단 툴바: 연결 컨트롤 + 뷰 전환 + 설정을 전부 한 줄에 압축.
+          GlassCard(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               children: [
-                Icon(Icons.error_sharp, size: 20, color: colors.onErrorContainer),
+                IconBadge(icon: Icons.cable_rounded, color: AppColors.accent, size: 32),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    session.errorMessage ?? '알 수 없는 오류',
-                    style: TextStyle(color: colors.onErrorContainer, fontSize: 13),
+                SizedBox(
+                  width: 210,
+                  child: PortSelector(
+                    selectedPort: session.pendingPort,
+                    enabled: !connected,
+                    onChanged: session.setPendingPort,
                   ),
+                ),
+                const SizedBox(width: 4),
+                BaudRateSelector(
+                  initialBaudRate: session.pendingBaudRate ?? 115200,
+                  enabled: !connected,
+                  onChanged: session.setPendingBaudRate,
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: connected ? session.disconnect : (canConnect ? () => _connect(session) : null),
+                  child: Text(connected ? 'Disconnect' : 'Connect'),
+                ),
+                const SizedBox(width: 8),
+                SegmentedButton<ViewMode>(
+                  style: const ButtonStyle(visualDensity: VisualDensity.compact),
+                  segments: const [
+                    ButtonSegment(
+                      value: ViewMode.terminal,
+                      tooltip: 'Terminal',
+                      icon: Icon(Icons.terminal_rounded, size: 18),
+                    ),
+                    ButtonSegment(
+                      value: ViewMode.hex,
+                      tooltip: 'Hex',
+                      icon: Icon(Icons.grid_view_rounded, size: 18),
+                    ),
+                  ],
+                  selected: {session.viewMode},
+                  onSelectionChanged: (selection) => session.setViewMode(selection.first),
+                ),
+                const Spacer(),
+                IconBadge(
+                  icon: Icons.settings_rounded,
+                  color: AppColors.idle,
+                  size: 32,
+                  tooltip: '폰트 / 테마',
+                  onTap: () => showDialog<void>(context: context, builder: (_) => const SettingsDialog()),
                 ),
               ],
             ),
           ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: session.viewMode == ViewMode.terminal ? const TerminalView() : const HexView(),
+          if (session.status == ConnectionStatus.error) ...[
+            const SizedBox(height: 10),
+            GlassCard(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              accent: AppColors.danger,
+              active: true,
+              child: Row(
+                children: [
+                  const Icon(Icons.error_rounded, size: 20, color: AppColors.danger),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      session.errorMessage ?? '알 수 없는 오류',
+                      style: const TextStyle(color: AppColors.textHi, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
+          Expanded(
+            child: GlassCard(
+              padding: const EdgeInsets.all(10),
+              accent: switch (session.status) {
+                ConnectionStatus.connected => AppColors.success,
+                ConnectionStatus.error => AppColors.danger,
+                ConnectionStatus.disconnected => null,
+              },
+              active: session.status == ConnectionStatus.connected,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.tile),
+                    child: session.viewMode == ViewMode.terminal ? const TerminalView() : const HexView(),
+                  ),
+                  if (connected)
+                    const Positioned(
+                      top: 10,
+                      right: 10,
+                      child: StatusPill(label: 'CONNECTED', color: AppColors.success),
+                    ),
+                ],
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const StatusBar(),
-              const SizedBox(height: 6),
-              const LineSender(),
-            ],
-          ),
-        ),
-      ],
+          const SizedBox(height: 10),
+          GlassCard(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8), child: const StatusBar()),
+          const SizedBox(height: 10),
+          GlassCard(padding: const EdgeInsets.all(12), child: const LineSender()),
+        ],
+      ),
     );
   }
 }
