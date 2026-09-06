@@ -21,7 +21,7 @@ macOS에는 Windows처럼 무료 시리얼 터미널이 마땅치 않다. CoolTe
 
 - macOS, Xcode 전체 설치(Command Line Tools만으로는 안 됨)
 - Flutter (stable 채널)
-- Homebrew `autoconf`/`automake`/`pkg-config` — `flutter_libserialport`가 CocoaPods로 `libserialport` C 라이브러리를 소스 빌드하는 데 필요
+- Homebrew `autoconf`/`automake`/`libtool`/`pkg-config` — `flutter_libserialport`가 CocoaPods로 `libserialport` C 라이브러리를 소스 빌드하는 데 필요
 
 ## 실행
 
